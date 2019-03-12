@@ -136,10 +136,10 @@ describe 'Merchants API' do
       items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(items["data"].length).to eq(3)
-      expect(items["data"][0]["id"]).to eq(item_1.id)
-      expect(items["data"][1]["id"]).to eq(item_2.id)
-      expect(items["data"][2]["id"]).to eq(item_3.id)
+      expect(items.length).to eq(3)
+      expect(items[0]["attributes"]["id"]).to eq(item_1.id)
+      expect(items[1]["attributes"]["id"]).to eq(item_2.id)
+      expect(items[2]["attributes"]["id"]).to eq(item_3.id)
     end
 
     it "Returns invoices for a merchant" do
@@ -150,10 +150,10 @@ describe 'Merchants API' do
       invoices = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoices["data"].length).to eq(3)
-      expect(invoices["data"][0]["id"]).to eq(invoice_1.id)
-      expect(invoices["data"][1]["id"]).to eq(invoice_2.id)
-      expect(invoices["data"][2]["id"]).to eq(invoice_3.id)
+      expect(invoices.length).to eq(3)
+      expect(invoices[0]["attributes"]["id"]).to eq(invoice_1.id)
+      expect(invoices[1]["attributes"]["id"]).to eq(invoice_2.id)
+      expect(invoices[2]["attributes"]["id"]).to eq(invoice_3.id)
     end
   end
 end
