@@ -156,4 +156,37 @@ describe 'Merchants API' do
       expect(invoices[2]["attributes"]["id"]).to eq(invoice_3.id)
     end
   end
+
+  describe 'business intelligence' do
+    describe 'All merchants' do
+      before :each do
+        @merchant_1, @merchant_2, @merchant_3, @merchant_4 = create_list(:merchant, 4)
+        @invoice_1, @invoice_2 = create_list(:invoice, 2, merchant: @merchant_1)
+        @invoice_3 = create(:invoice, merchant: @merchant_2)
+        @invoice_4 = create(:invoice, merchant: @merchant_3)
+        @large_unpaid_invoice = create(:invoice, merchant: @merchant_4)
+        @invoice_1.update(invoice_items: create_list(:invoice_item, 3))
+        @invoice_2.update(invoice_items: create_list(:invoice_item, 5))
+        @invoice_3.invoice_items = create_list(:invoice_item, 12)
+        @invoice_4.invoice_items = create_list(:invoice_item, 4)
+        @large_unpaid_invoice.invoice_items = create_list(:invoice_item, 20)
+        @invoice_1.transactions << create(:transaction, invoice: @invoice_1)
+        @invoice_2.transactions << create(:failed_transaction, invoice: @invoice_2)
+        @invoice_3.transactions << create(:transaction, invoice: @invoice_3)
+        @invoice_4.transactions << create(:transaction, invoice: @invoice_4)
+      end
+
+      it 'can return a list of the top # merchants by revenue' do
+        get "/api/v1/merchants/most_revenue?quantity=3"
+
+        merchants = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(merchants[0]["id"]).to eq(@merchant_2.id)
+        expect(merchants[1]["id"]).to eq(@merchant_3.id)
+        expect(merchants[2]["id"]).to eq(@merchant_1.id)
+        expect(merchants.length).to eq(3)
+      end
+    end
+  end
 end
