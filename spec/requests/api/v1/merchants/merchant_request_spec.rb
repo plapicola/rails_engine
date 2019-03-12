@@ -118,9 +118,9 @@ describe 'Merchants API' do
       merchants = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchants[0]["created_at"]).to eq(@time_parameter)
-      expect(merchants[1]["created_at"]).to eq(@time_parameter)
-      expect(merchants[2]["created_at"]).to eq(@time_parameter)
+      expect(merchants[0]["updated_at"]).to eq(@time_parameter)
+      expect(merchants[1]["updated_at"]).to eq(@time_parameter)
+      expect(merchants[2]["updated_at"]).to eq(@time_parameter)
       expect(merchants.length).to eq(3)
     end
   end
