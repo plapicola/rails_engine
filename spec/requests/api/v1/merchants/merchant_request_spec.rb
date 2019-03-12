@@ -21,51 +21,107 @@ describe 'Merchants API' do
     expect(merchant["id"]).to eq(id)
   end
 
-  it 'can find a merchant by its id' do
-    id = create(:merchant).id
+  describe 'finder' do
+    before :each do
+      @time_parameter = "2012-03-27T14:54:05.000Z"
+      @created_at = "2012-03-27 14:54:05 UTC"
+      @updated_at = "2012-03-27 14:54:05 UTC"
+      @merchant = create(:merchant, created_at: @created_at, updated_at: @updated_at)
+    end
 
-    get "/api/v1/merchants/find?id=#{id}"
+    it 'can find a merchant by its id' do
+      id = @merchant.id
 
-    merchant = JSON.parse(response.body)
+      get "/api/v1/merchants/find?id=#{id}"
 
-    expect(response).to be_successful
-    expect(merchant["id"]).to eq(id)
+      merchant = JSON.parse(response.body)
+
+      expect(response).to be_successful
+      expect(merchant["id"]).to eq(id)
+    end
+
+    it 'can find a merchant by its name' do
+      name = @merchant.name
+
+      get "/api/v1/merchants/find?name=#{name}"
+
+      merchant = JSON.parse(response.body)
+
+      expect(response).to be_successful
+      expect(merchant["name"]).to eq(name)
+    end
+
+    it 'can find a merchant by its created_at time' do
+      get "/api/v1/merchants/find?created_at=#{@created_at}"
+
+      merchant = JSON.parse(response.body)
+
+      expect(response).to be_successful
+      expect(merchant["created_at"]).to eq(@time_parameter)
+    end
+
+    it 'can find a merchant by its updated_at time' do
+      get "/api/v1/merchants/find?updated_at=#{@updated_at}"
+
+      merchant = JSON.parse(response.body)
+
+      expect(response).to be_successful
+      expect(merchant["updated_at"]).to eq(@time_parameter)
+    end
   end
 
-  it 'can find a merchant by its name' do
-    name = create(:merchant).name
+  describe 'multi-finders' do
+    before :each do
+      @time_parameter = "2012-03-27T14:54:05.000Z"
+      @created_at = "2012-03-27 14:54:05 UTC"
+      @updated_at = "2012-03-27 14:54:05 UTC"
+      @merchant_1 = create(:merchant, name: "Bob", created_at: @created_at, updated_at: @updated_at)
+      @merchant_2 = create(:merchant, name: "Bob", updated_at: @updated_at)
+      @merchant_3 = create(:merchant, name: "Jim", created_at: @created_at, updated_at: @updated_at)
+    end
 
-    get "/api/v1/merchants/find?name=#{name}"
+    it 'can find all merchants by id' do
+      get "/api/v1/merchants/find_all?id=#{@merchant_1.id}"
 
-    merchant = JSON.parse(response.body)
+      merchants = JSON.parse(response.body)
 
-    expect(response).to be_successful
-    expect(merchant["name"]).to eq(name)
-  end
+      expect(response).to be_successful
+      expect(merchants[0]["id"]).to eq(@merchant_1.id)
+      expect(merchants.length).to eq(1)
+    end
 
-  it 'can find a merchant by its created_at time' do
-    time_parameter = "2012-03-27T14:54:05.000Z"
-    created_at = "2012-03-27 14:54:05 UTC"
-    create(:merchant, created_at: created_at)
+    it 'can find all merchants by name' do
+      get "/api/v1/merchants/find_all?name=#{@merchant_1.name}"
 
-    get "/api/v1/merchants/find?created_at=#{created_at}"
+      merchants = JSON.parse(response.body)
 
-    merchant = JSON.parse(response.body)
+      expect(response).to be_successful
+      expect(merchants[0]["name"]).to eq(@merchant_1.name)
+      expect(merchants[1]["name"]).to eq(@merchant_2.name)
+      expect(merchants.length).to eq(2)
+    end
 
-    expect(response).to be_successful
-    expect(merchant["created_at"]).to eq(time_parameter)
-  end
+    it 'can find all merchants by created_at' do
+      get "/api/v1/merchants/find_all?created_at=#{@created_at}"
 
-  it 'can find a merchant by its updated_at time' do
-    time_parameter = "2012-03-27T14:54:05.000Z"
-    updated_at = "2012-03-27 14:54:05 UTC"
-    create(:merchant, updated_at: updated_at)
+      merchants = JSON.parse(response.body)
 
-    get "/api/v1/merchants/find?updated_at=#{updated_at}"
+      expect(response).to be_successful
+      expect(merchants[0]["created_at"]).to eq(@time_parameter)
+      expect(merchants[1]["created_at"]).to eq(@time_parameter)
+      expect(merchants.length).to eq(2)
+    end
 
-    merchant = JSON.parse(response.body)
+    it 'can find all merchants by updated_at' do
+      get "/api/v1/merchants/find_all?updated_at=#{@updated_at}"
 
-    expect(response).to be_successful
-    expect(merchant["updated_at"]).to eq(time_parameter)
+      merchants = JSON.parse(response.body)
+
+      expect(response).to be_successful
+      expect(merchants[0]["created_at"]).to eq(@time_parameter)
+      expect(merchants[1]["created_at"]).to eq(@time_parameter)
+      expect(merchants[2]["created_at"]).to eq(@time_parameter)
+      expect(merchants.length).to eq(3)
+    end
   end
 end
