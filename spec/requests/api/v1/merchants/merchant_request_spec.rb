@@ -23,7 +23,6 @@ describe 'Merchants API' do
 
   describe 'finder' do
     before :each do
-      @time_parameter = "2012-03-27T14:54:05.000Z"
       @created_at = "2012-03-27 14:54:05 UTC"
       @updated_at = "2012-03-27 14:54:05 UTC"
       @merchant = create(:merchant, created_at: @created_at, updated_at: @updated_at)
@@ -57,7 +56,7 @@ describe 'Merchants API' do
       merchant = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchant["data"]["attributes"]["created_at"]).to eq(@time_parameter)
+      expect(merchant["data"]["attributes"]["id"]).to eq(@merchant.id)
     end
 
     it 'can find a merchant by its updated_at time' do
@@ -66,13 +65,12 @@ describe 'Merchants API' do
       merchant = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchant["data"]["attributes"]["updated_at"]).to eq(@time_parameter)
+      expect(merchant["data"]["attributes"]["id"]).to eq(@merchant.id)
     end
   end
 
   describe 'multi-finders' do
     before :each do
-      @time_parameter = "2012-03-27T14:54:05.000Z"
       @created_at = "2012-03-27 14:54:05 UTC"
       @updated_at = "2012-03-27 14:54:05 UTC"
       @merchant_1 = create(:merchant, name: "Bob", created_at: @created_at, updated_at: @updated_at)
@@ -107,8 +105,8 @@ describe 'Merchants API' do
       merchants = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchants["data"][0]["attributes"]["created_at"]).to eq(@time_parameter)
-      expect(merchants["data"][1]["attributes"]["created_at"]).to eq(@time_parameter)
+      expect(merchants["data"][0]["attributes"]["id"]).to eq(@merchant_1.id)
+      expect(merchants["data"][1]["attributes"]["id"]).to eq(@merchant_3.id)
       expect(merchants["data"].length).to eq(2)
     end
 
@@ -118,14 +116,44 @@ describe 'Merchants API' do
       merchants = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchants["data"][0]["attributes"]["updated_at"]).to eq(@time_parameter)
-      expect(merchants["data"][1]["attributes"]["updated_at"]).to eq(@time_parameter)
-      expect(merchants["data"][2]["attributes"]["updated_at"]).to eq(@time_parameter)
+      expect(merchants["data"][0]["attributes"]["id"]).to eq(@merchant_1.id)
+      expect(merchants["data"][1]["attributes"]["id"]).to eq(@merchant_2.id)
+      expect(merchants["data"][2]["attributes"]["id"]).to eq(@merchant_3.id)
       expect(merchants["data"].length).to eq(3)
     end
   end
 
   describe 'relationships' do
-    pending "Returns items for merchant"
+    before :each do
+      @merchant = create(:merchant)
+    end
+
+    it "Returns items for merchant" do
+      item_1, item_2, item_3 = create_list(:item, 3, merchant: @merchant)
+
+      get "/api/v1/merchants/#{@merchant.id}/items"
+
+      items = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(items["data"].length).to eq(3)
+      expect(items["data"][0]["id"]).to eq(item_1.id)
+      expect(items["data"][1]["id"]).to eq(item_2.id)
+      expect(items["data"][2]["id"]).to eq(item_3.id)
+    end
+
+    it "Returns invoices for a merchant" do
+      invoice_1, invoice_2, invoice_3 = create_list(:invoice, 3, merchant: @merchant)
+
+      get "/api/v1/merchants/#{@merchant.id}/invoices"
+
+      invoices = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(invoices["data"].length).to eq(3)
+      expect(invoices["data"][0]["id"]).to eq(invoice_1.id)
+      expect(invoices["data"][1]["id"]).to eq(invoice_2.id)
+      expect(invoices["data"][2]["id"]).to eq(invoice_3.id)
+    end
   end
 end
