@@ -7,7 +7,7 @@ describe 'Merchants API' do
     get '/api/v1/merchants/'
 
     expect(response).to be_successful
-    expect(JSON.parse(response.body).count).to eq(3)
+    expect(JSON.parse(response.body)['data'].count).to eq(3)
   end
 
   it 'can get a merchant by its id' do
@@ -18,7 +18,7 @@ describe 'Merchants API' do
     merchant = JSON.parse(response.body)
 
     expect(response).to be_successful
-    expect(merchant["id"]).to eq(id)
+    expect(merchant["data"]["attributes"]["id"]).to eq(id)
   end
 
   describe 'finder' do
@@ -37,7 +37,7 @@ describe 'Merchants API' do
       merchant = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchant["id"]).to eq(id)
+      expect(merchant["data"]["attributes"]["id"]).to eq(id)
     end
 
     it 'can find a merchant by its name' do
@@ -48,7 +48,7 @@ describe 'Merchants API' do
       merchant = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchant["name"]).to eq(name)
+      expect(merchant["data"]["attributes"]["name"]).to eq(name)
     end
 
     it 'can find a merchant by its created_at time' do
@@ -57,7 +57,7 @@ describe 'Merchants API' do
       merchant = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchant["created_at"]).to eq(@time_parameter)
+      expect(merchant["data"]["attributes"]["created_at"]).to eq(@time_parameter)
     end
 
     it 'can find a merchant by its updated_at time' do
@@ -66,7 +66,7 @@ describe 'Merchants API' do
       merchant = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchant["updated_at"]).to eq(@time_parameter)
+      expect(merchant["data"]["attributes"]["updated_at"]).to eq(@time_parameter)
     end
   end
 
@@ -86,7 +86,7 @@ describe 'Merchants API' do
       merchants = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchants[0]["id"]).to eq(@merchant_1.id)
+      expect(merchants["data"][0]["attributes"]["id"]).to eq(@merchant_1.id)
       expect(merchants.length).to eq(1)
     end
 
@@ -96,9 +96,9 @@ describe 'Merchants API' do
       merchants = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchants[0]["name"]).to eq(@merchant_1.name)
-      expect(merchants[1]["name"]).to eq(@merchant_2.name)
-      expect(merchants.length).to eq(2)
+      expect(merchants["data"][0]["attributes"]["name"]).to eq(@merchant_1.name)
+      expect(merchants["data"][1]["attributes"]["name"]).to eq(@merchant_2.name)
+      expect(merchants["data"].length).to eq(2)
     end
 
     it 'can find all merchants by created_at' do
@@ -107,9 +107,9 @@ describe 'Merchants API' do
       merchants = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchants[0]["created_at"]).to eq(@time_parameter)
-      expect(merchants[1]["created_at"]).to eq(@time_parameter)
-      expect(merchants.length).to eq(2)
+      expect(merchants["data"][0]["attributes"]["created_at"]).to eq(@time_parameter)
+      expect(merchants["data"][1]["attributes"]["created_at"]).to eq(@time_parameter)
+      expect(merchants["data"].length).to eq(2)
     end
 
     it 'can find all merchants by updated_at' do
@@ -118,10 +118,14 @@ describe 'Merchants API' do
       merchants = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(merchants[0]["updated_at"]).to eq(@time_parameter)
-      expect(merchants[1]["updated_at"]).to eq(@time_parameter)
-      expect(merchants[2]["updated_at"]).to eq(@time_parameter)
-      expect(merchants.length).to eq(3)
+      expect(merchants["data"][0]["attributes"]["updated_at"]).to eq(@time_parameter)
+      expect(merchants["data"][1]["attributes"]["updated_at"]).to eq(@time_parameter)
+      expect(merchants["data"][2]["attributes"]["updated_at"]).to eq(@time_parameter)
+      expect(merchants["data"].length).to eq(3)
     end
+  end
+
+  describe 'relationships' do
+    pending "Returns items for merchant"
   end
 end
