@@ -4,6 +4,6 @@ class Api::V1::Merchants::RevenueController < ApplicationController
   end
 
   def show
-    render jdon: RevenueSerializer.new(Merchant.find(params[:merchant_id]).revenue)
+    render json: RevenueSerializer.new(Merchant.find(params[:merchant_id]).revenue(params[:date]))
   end
 end

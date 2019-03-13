@@ -27,4 +27,12 @@ class Merchant < ApplicationRecord
            invoices: {created_at: DateTime.parse(day + "UTC").all_day}
     )[0]
   end
+
+  def revenue(date = nil)
+    date_range = (date && DateTime.parse(date).all_day) || (Time.new(0)..Time.now)
+    invoices.joins(:invoice_items, :transactions)
+            .select('SUM(invoice_items.unit_price * invoice_items.quantity / 100.0) as total_revenue')
+            .merge(Transaction.unscoped.successful)
+            .where(created_at: date_range)[0]
+  end
 end
