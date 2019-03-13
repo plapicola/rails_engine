@@ -35,4 +35,14 @@ class Merchant < ApplicationRecord
             .merge(Transaction.unscoped.successful)
             .where(created_at: date_range)[0]
   end
+
+  def favorite_customer
+    Customer.joins(invoices: :transactions)
+            .select("customers.*, COUNT(transactions.id) as num_transactions")
+            .merge(Transaction.unscoped.successful)
+            .where(invoices: {merchant_id: self.id})
+            .group(:id)
+            .order("num_transactions DESC")
+            .first
+  end
 end
