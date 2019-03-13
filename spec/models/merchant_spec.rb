@@ -59,21 +59,24 @@ RSpec.describe Merchant, type: :model do
   describe 'instance methods' do
     before :each do
       @merchant_1, @merchant_2 = create_list(:merchant, 2)
-      @invoice_1, @invoice_2 = create_list(:invoice, 2, merchant: @merchant_1)
-      @invoice_3 = create(:invoice, merchant: @merchant_2)
+      @customer = create(:customer)
+      @invoice_1, @invoice_2, @invoice_3 = create_list(:invoice, 3, merchant: @merchant_1, customer: @customer)
+      @invoice_4 = create(:invoice, merchant: @merchant_2)
       @unpaid_invoice = create(:invoice, merchant: @merchant_1)
       @invoice_1.invoice_items = create_list(:invoice_item, 3)
       @invoice_2.invoice_items = create_list(:invoice_item, 5)
-      @invoice_3.invoice_items = create_list(:invoice_item, 12)
+      @invoice_3.invoice_items = create_list(:invoice_item, 5)
+      @invoice_4.invoice_items = create_list(:invoice_item, 12)
       @unpaid_invoice.invoice_items = create_list(:invoice_item, 5)
       @invoice_1.transactions << create(:transaction, invoice: @invoice_1)
       @invoice_2.transactions << create(:failed_transaction, invoice: @invoice_2)
       @invoice_3.transactions << create(:transaction, invoice: @invoice_3)
+      @invoice_4.transactions << create(:transaction, invoice: @invoice_4)
     end
 
     describe 'revenue(day = nil)' do
       it 'returns a total_revenue for a merchant' do
-        expect(@merchant_1.revenue.revenue).to eq(0.03)
+        expect(@merchant_1.revenue.revenue).to eq(0.08)
       end
 
       it 'can also return revenue for a day' do
@@ -83,6 +86,12 @@ RSpec.describe Merchant, type: :model do
         create(:transaction, invoice: old_invoice)
 
         expect(@merchant_1.revenue(five_days_ago).revenue).to eq(0.05)
+      end
+    end
+
+    describe 'favorite_customer' do
+      it 'returns the customer with the most succwessful transactions' do
+        expect(@merchant_1.favorite_customer).to eq(@customer)
       end
     end
   end
