@@ -182,9 +182,9 @@ describe 'Merchants API' do
         merchants = JSON.parse(response.body)["data"]
 
         expect(response).to be_successful
-        expect(merchants[0]["id"]).to eq(@merchant_2.id)
-        expect(merchants[1]["id"]).to eq(@merchant_3.id)
-        expect(merchants[2]["id"]).to eq(@merchant_1.id)
+        expect(merchants[0]["attributes"]["id"]).to eq(@merchant_2.id)
+        expect(merchants[1]["attributes"]["id"]).to eq(@merchant_3.id)
+        expect(merchants[2]["attributes"]["id"]).to eq(@merchant_1.id)
         expect(merchants.length).to eq(3)
       end
     end
