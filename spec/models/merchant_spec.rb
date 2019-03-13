@@ -55,4 +55,26 @@ RSpec.describe Merchant, type: :model do
       end
     end
   end
+
+  describe 'instance methods' do
+    before :each do
+      @merchant_1, @merchant_2 = create_list(:merchant, 2)
+      @invoice_1, @invoice_2 = create_list(:invoice, 2, merchant: @merchant_1)
+      @invoice_3 = create(:invoice, merchant: @merchant_2)
+      @unpaid_invoice = create(:invoice, merchant: @merchant_1)
+      @invoice_1.invoice_items = create_list(:invoice_item, 3)
+      @invoice_2.invoice_items = create_list(:invoice_item, 5)
+      @invoice_3.invoice_items = create_list(:invoice_item, 12)
+      @unpaid_invoice.invoice_items = create_list(:invoice_item, 5)
+      @invoice_1.transactions << create(:transaction, invoice: @invoice_1)
+      @invoice_2.transactions << create(:failed_transaction, invoice: @invoice_2)
+      @invoice_3.transactions << create(:transaction, invoice: @invoice_3)
+    end
+
+    describe 'revenue' do
+      it 'returns a total_revenue for a merchant' do
+        expect(@merchant_1.revenue.total_revenue).to eq(0.03)
+      end
+    end
+  end
 end
