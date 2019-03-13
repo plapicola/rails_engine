@@ -187,6 +187,18 @@ describe 'Merchants API' do
         expect(merchants[2]["attributes"]["id"]).to eq(@merchant_1.id)
         expect(merchants.length).to eq(3)
       end
+
+      it 'can return a list of the top # merchants by items sold' do
+        get "/api/v1/merchants/most_items?quantity=3"
+
+        merchants = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(merchants[0]["attributes"]["id"]).to eq(@merchant_2.id)
+        expect(merchants[1]["attributes"]["id"]).to eq(@merchant_3.id)
+        expect(merchants[2]["attributes"]["id"]).to eq(@merchant_1.id)
+        expect(merchants.length).to eq(3)
+      end
     end
   end
 end
