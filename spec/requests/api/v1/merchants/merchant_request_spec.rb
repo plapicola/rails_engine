@@ -165,8 +165,8 @@ describe 'Merchants API' do
         @invoice_3 = create(:invoice, merchant: @merchant_2)
         @invoice_4 = create(:invoice, merchant: @merchant_3)
         @large_unpaid_invoice = create(:invoice, merchant: @merchant_4)
-        @invoice_1.update(invoice_items: create_list(:invoice_item, 3))
-        @invoice_2.update(invoice_items: create_list(:invoice_item, 5))
+        @invoice_1.invoice_items = create_list(:invoice_item, 3)
+        @invoice_2.invoice_items = create_list(:invoice_item, 5)
         @invoice_3.invoice_items = create_list(:invoice_item, 12)
         @invoice_4.invoice_items = create_list(:invoice_item, 4)
         @large_unpaid_invoice.invoice_items = create_list(:invoice_item, 20)
@@ -198,6 +198,21 @@ describe 'Merchants API' do
         expect(merchants[1]["attributes"]["id"]).to eq(@merchant_3.id)
         expect(merchants[2]["attributes"]["id"]).to eq(@merchant_1.id)
         expect(merchants.length).to eq(3)
+      end
+
+      it 'can return the total revenue across all merchants on a provided date' do
+        old_invoice = create(:invoice, merchant: @merchant_1, created_at: 5.days.ago)
+        old_invoice.invoice_items = create_list(:invoice_item, 3)
+        old_invoice.transactions << create(:transaction, invoice: old_invoice)
+
+        today = Time.now.strftime("%F")
+
+        get "/api/v1/merchants/revenue?day=#{today}"
+
+        revenue = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(revenue["revenue"]).to eq("0.15")
       end
     end
   end
