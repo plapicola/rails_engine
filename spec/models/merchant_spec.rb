@@ -34,5 +34,12 @@ RSpec.describe Merchant, type: :model do
         expect(Merchant.top_by_revenue(3)).to eq([@merchant_2, @merchant_3, @merchant_1])
       end
     end
+
+    describe 'top_by_items(limit)' do
+      it 'returns the top X merchants by items sold' do
+        expect(Merchant.top_by_items(1)).to eq([@merchant_2])
+        expect(Merchant.top_by_items(3)).to eq([@merchant_2, @merchant_3, @merchant_1])
+      end
+    end
   end
 end
