@@ -41,5 +41,18 @@ RSpec.describe Merchant, type: :model do
         expect(Merchant.top_by_items(3)).to eq([@merchant_2, @merchant_3, @merchant_1])
       end
     end
+
+    describe 'revenue_for_day(date)' do
+      it 'returns the total revenue for the provided date' do
+        today = Time.now.strftime("%F")
+        five_days_ago = 5.days.ago.strftime("%F")
+        old_invoice = create(:invoice, merchant: @merchant_1, created_at: five_days_ago)
+        old_invoice.invoice_items = create_list(:invoice_item, 3)
+        old_invoice.transactions << create(:transaction, invoice: old_invoice)
+
+        expect(Merchant.revenue_for_day(today)).to eq(0.15)
+        expect(Merchant.revenue_for_day(five_days_ago)).to eq(0.03)
+      end
+    end
   end
 end
