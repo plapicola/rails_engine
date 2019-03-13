@@ -17,8 +17,8 @@ RSpec.describe Merchant, type: :model do
       @invoice_3 = create(:invoice, merchant: @merchant_2)
       @invoice_4 = create(:invoice, merchant: @merchant_3)
       @large_unpaid_invoice = create(:invoice, merchant: @merchant_4)
-      @invoice_1.update(invoice_items: create_list(:invoice_item, 3))
-      @invoice_2.update(invoice_items: create_list(:invoice_item, 5))
+      @invoice_1.invoice_items = create_list(:invoice_item, 3)
+      @invoice_2.invoice_items = create_list(:invoice_item, 5)
       @invoice_3.invoice_items = create_list(:invoice_item, 12)
       @invoice_4.invoice_items = create_list(:invoice_item, 4)
       @large_unpaid_invoice.invoice_items = create_list(:invoice_item, 20)
@@ -44,14 +44,14 @@ RSpec.describe Merchant, type: :model do
 
     describe 'revenue_for_day(date)' do
       it 'returns the total revenue for the provided date' do
-        today = Time.now.strftime("%F")
+        today = 0.days.ago.strftime("%F")
         five_days_ago = 5.days.ago.strftime("%F")
-        old_invoice = create(:invoice, merchant: @merchant_1, created_at: five_days_ago)
+        old_invoice = create(:invoice, merchant: @merchant_1, created_at: 5.days.ago)
         old_invoice.invoice_items = create_list(:invoice_item, 3)
         old_invoice.transactions << create(:transaction, invoice: old_invoice)
 
-        expect(Merchant.revenue_for_day(today)).to eq(0.15)
-        expect(Merchant.revenue_for_day(five_days_ago)).to eq(0.03)
+        expect(Merchant.revenue_for_day(today).total_revenue).to eq(0.19)
+        expect(Merchant.revenue_for_day(five_days_ago).total_revenue).to eq(0.03)
       end
     end
   end

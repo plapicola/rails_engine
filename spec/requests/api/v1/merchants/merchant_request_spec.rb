@@ -205,14 +205,52 @@ describe 'Merchants API' do
         old_invoice.invoice_items = create_list(:invoice_item, 3)
         old_invoice.transactions << create(:transaction, invoice: old_invoice)
 
-        today = Time.now.strftime("%F")
+        today = 0.days.ago.strftime("%F")
 
-        get "/api/v1/merchants/revenue?day=#{today}"
+        get "/api/v1/merchants/revenue?date=#{today}"
 
         revenue = JSON.parse(response.body)["data"]
 
         expect(response).to be_successful
-        expect(revenue["revenue"]).to eq("0.15")
+        expect(revenue["attributes"]["total_revenue"]).to eq("0.19")
+      end
+    end
+
+    describe 'single merchants' do
+      before :each do
+        @merchant_1, @merchant_2 = create_list(:merchant, 2)
+        @invoice_1, @invoice_2 = create_list(:invoice, 2, merchant: @merchant_1)
+        @invoice_3 = create(:invoice, merchant: @merchant_2)
+        @unpaid_invoice = create(:invoice, merchant: @merchant_1)
+        @invoice_1.invoice_items = create_list(:invoice_item, 3)
+        @invoice_2.invoice_items = create_list(:invoice_item, 5)
+        @invoice_3.invoice_items = create_list(:invoice_item, 12)
+        @unpaid_invoice.invoice_items = create_list(:invoice_item, 5)
+        @invoice_1.transactions << create(:transaction, invoice: @invoice_1)
+        @invoice_2.transactions << create(:failed_transaction, invoice: @invoice_2)
+        @invoice_3.transactions << create(:transaction, invoice: @invoice_3)
+      end
+
+      it 'Can return the total revenue for a merchant' do
+        get "/api/v1/merchants/#{@merchant_1.id}/revenue"
+
+        revenue = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(revenue["attributes"]["total_revenue"]).to eq("0.03")
+      end
+
+      it 'Can return the total revenue for a merchant for a day' do
+        five_days_ago = 5.days.ago.strftime("%F")
+        old_invoice = create(:invoice, merchant: @merchant_1, created_at: 5.days.ago)
+        old_invoice.invoice_items = create_list(:invoice_item, 5, invoice: old_invoice)
+        create(:transaction, invoice: old_invoice)
+        get "/api/v1/merchants/#{@merchant_1.id}/revenue?date=#{five_days_ago}"
+
+        revenue = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(revenue["attributes"]["total_revenue"]).to eq("0.05")
       end
     end
   end
