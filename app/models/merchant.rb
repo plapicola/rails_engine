@@ -19,4 +19,12 @@ class Merchant < ApplicationRecord
     .order('total_quantity desc')
     .limit(limit)
   end
+
+  def self.revenue_for_day(day)
+    joins(invoices: [:invoice_items, :transactions])
+    .select('SUM(invoice_items.unit_price * invoice_items.quantity / 100.0) as total_revenue')
+    .where(transactions: {result: 0},
+           invoices: {created_at: DateTime.parse(day + "UTC").all_day}
+    )[0]
+  end
 end
