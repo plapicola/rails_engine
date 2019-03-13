@@ -73,7 +73,7 @@ RSpec.describe Merchant, type: :model do
 
     describe 'revenue(day = nil)' do
       it 'returns a total_revenue for a merchant' do
-        expect(@merchant_1.revenue.total_revenue).to eq(0.03)
+        expect(@merchant_1.revenue.revenue).to eq(0.03)
       end
 
       it 'can also return revenue for a day' do
@@ -82,7 +82,7 @@ RSpec.describe Merchant, type: :model do
         old_invoice.invoice_items = create_list(:invoice_item, 5, invoice: old_invoice)
         create(:transaction, invoice: old_invoice)
 
-        expect(@merchant_1.revenue(five_days_ago).total_revenue).to eq(0.05)
+        expect(@merchant_1.revenue(five_days_ago).revenue).to eq(0.05)
       end
     end
   end

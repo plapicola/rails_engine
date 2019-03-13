@@ -237,7 +237,7 @@ describe 'Merchants API' do
         revenue = JSON.parse(response.body)["data"]
 
         expect(response).to be_successful
-        expect(revenue["attributes"]["total_revenue"]).to eq("0.03")
+        expect(revenue["attributes"]["revenue"]).to eq("0.03")
       end
 
       it 'Can return the total revenue for a merchant for a day' do
@@ -250,7 +250,7 @@ describe 'Merchants API' do
         revenue = JSON.parse(response.body)["data"]
 
         expect(response).to be_successful
-        expect(revenue["attributes"]["total_revenue"]).to eq("0.05")
+        expect(revenue["attributes"]["revenue"]).to eq("0.05")
       end
     end
   end
