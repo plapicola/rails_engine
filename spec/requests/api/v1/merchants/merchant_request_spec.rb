@@ -219,16 +219,19 @@ describe 'Merchants API' do
     describe 'single merchants' do
       before :each do
         @merchant_1, @merchant_2 = create_list(:merchant, 2)
-        @invoice_1, @invoice_2 = create_list(:invoice, 2, merchant: @merchant_1)
-        @invoice_3 = create(:invoice, merchant: @merchant_2)
+        @customer = create(:customer)
+        @invoice_1, @invoice_2, @invoice_3 = create_list(:invoice, 3, merchant: @merchant_1, customer: @customer)
+        @invoice_4 = create(:invoice, merchant: @merchant_2)
         @unpaid_invoice = create(:invoice, merchant: @merchant_1)
         @invoice_1.invoice_items = create_list(:invoice_item, 3)
         @invoice_2.invoice_items = create_list(:invoice_item, 5)
-        @invoice_3.invoice_items = create_list(:invoice_item, 12)
+        @invoice_3.invoice_items = create_list(:invoice_item, 5)
+        @invoice_4.invoice_items = create_list(:invoice_item, 12)
         @unpaid_invoice.invoice_items = create_list(:invoice_item, 5)
         @invoice_1.transactions << create(:transaction, invoice: @invoice_1)
         @invoice_2.transactions << create(:failed_transaction, invoice: @invoice_2)
         @invoice_3.transactions << create(:transaction, invoice: @invoice_3)
+        @invoice_4.transactions << create(:transaction, invoice: @invoice_4)
       end
 
       it 'Can return the total revenue for a merchant' do
@@ -237,7 +240,7 @@ describe 'Merchants API' do
         revenue = JSON.parse(response.body)["data"]
 
         expect(response).to be_successful
-        expect(revenue["attributes"]["revenue"]).to eq("0.03")
+        expect(revenue["attributes"]["revenue"]).to eq("0.08")
       end
 
       it 'Can return the total revenue for a merchant for a day' do
@@ -251,6 +254,16 @@ describe 'Merchants API' do
 
         expect(response).to be_successful
         expect(revenue["attributes"]["revenue"]).to eq("0.05")
+      end
+
+      it 'can return the customer with the most successful transactions' do
+        get "/api/v1/merchants/#{@merchant_1.id}/favorite_customer"
+
+        customer = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(customer["attributes"]["id"]).to eq(@customer.id)
+        expect(customer["attributes"]["first_name"]).to eq(@customer.first_name)
       end
     end
   end
