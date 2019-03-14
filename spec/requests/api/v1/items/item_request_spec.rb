@@ -69,12 +69,12 @@ describe 'Items API' do
     end
 
     it 'it can find by unit_price' do
-      get "/api/v1/items/find?unit_price=#{@item.unit_price}"
+      get "/api/v1/items/find?unit_price=#{@item.unit_price / 100.0}"
 
       item = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(item["attributes"]["unit_price"]).to eq(@item.unit_price / 100.0)
+      expect(item["attributes"]["unit_price"]).to eq((@item.unit_price / 100.0).to_s)
     end
 
     it 'it can find by merchant_id' do
@@ -147,7 +147,7 @@ describe 'Items API' do
     end
 
     it 'it can find by unit_price' do
-      get "/api/v1/items/find_all?unit_price=#{@item_1.unit_price}"
+      get "/api/v1/items/find_all?unit_price=#{@item_1.unit_price / 100.0}"
 
       items = JSON.parse(response.body)["data"]
 
