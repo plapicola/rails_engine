@@ -38,4 +38,20 @@ RSpec.describe Item, type: :model do
       end
     end
   end
+
+  describe 'instance methods' do
+    describe 'best_day' do
+      before :each do
+        @item = create(:item)
+        @two_weeks_ago = 2.weeks.ago.strftime("%F %T UTC")
+        @yesterday = 1.day.ago.strftime("%F %T UTC")
+        create_list(:invoice, 5, items: [@item], created_at: @two_weeks_ago)
+        create_list(:invoice, 3, items: [@item], created_at: @yesterday)
+      end
+
+      it 'returns the day where the item was sold the most' do
+        expect(@item.best_day).to eq(@two_weeks_ago)
+      end
+    end
+  end
 end
