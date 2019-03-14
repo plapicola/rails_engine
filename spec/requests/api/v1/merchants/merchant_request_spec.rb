@@ -25,9 +25,9 @@ describe 'Merchants API' do
     merchant_1, merchant_2 = create_list(:merchant, 2)
     get '/api/v1/merchants/random'
 
-    merchant = JSON.parse(response.body)["data"]
+    merchant = JSON.parse(response.body)["data"]["attributes"]["id"]
 
-    expect(merchant).to eq(merchant_1).or(eq(merchant_2))
+    expect(merchant).to eq(merchant_1.id).or(eq(merchant_2.id))
   end
 
   describe 'finder' do
