@@ -255,7 +255,22 @@ describe 'Items API' do
     end
 
     describe 'single items' do
-      pending 'It can return the date where the item was sold the most'
+      before :each do
+        @item = create(:item)
+        @two_weeks_ago = 2.weeks.ago.strftime("%F %T UTC")
+        @yesterday = 1.day.ago.strftime("%F %T UTC")
+        create_list(:invoice, 5, items: [@item], created_at: @two_weeks_ago)
+        create_list(:invoice, 3, items: [@item], created_at: @yesterday)
+      end
+
+      it 'It can return the date where the item was sold the most' do
+        get "/api/v1/items/#{@item.id}/best_day"
+
+        date = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(date["attributes"]["date"]).to eq(2.weeks.ago.strftime("%FT%T.%z"))
+      end
     end
   end
 end
