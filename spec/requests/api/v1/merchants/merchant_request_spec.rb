@@ -21,6 +21,15 @@ describe 'Merchants API' do
     expect(merchant["data"]["attributes"]["id"]).to eq(id)
   end
 
+  it 'can return a random merchant' do
+    merchant_1, merchant_2 = create_list(:merchant, 2)
+    get '/api/v1/merchants/random'
+
+    merchant = JSON.parse(response.body)["data"]
+
+    expect(merchant).to eq(merchant_1).or(eq(merchant_2))
+  end
+
   describe 'finder' do
     before :each do
       @created_at = "2012-03-27 14:54:05 UTC"
