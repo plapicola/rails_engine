@@ -45,4 +45,13 @@ class Merchant < ApplicationRecord
             .order("num_transactions DESC")
             .first
   end
+
+  def pending_customers
+    Customer.distinct
+            .joins(:invoices)
+            .joins('LEFT OUTER JOIN transactions ON transactions.invoice_id = invoices.id')
+            .where(invoices: {merchant_id: self})
+            .group("invoices.id, customers.id")
+            .having("COUNT(CASE WHEN transactions.result = 0 THEN 1 ELSE NULL END) = 0")
+  end
 end

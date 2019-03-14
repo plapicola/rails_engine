@@ -94,5 +94,11 @@ RSpec.describe Merchant, type: :model do
         expect(@merchant_1.favorite_customer).to eq(@customer)
       end
     end
+
+    describe 'pending_customers' do
+      it 'returns all customers with pending invoices' do
+        expect(@merchant_1.pending_customers).to eq([@customer, @unpaid_invoice.customer])
+      end
+    end
   end
 end

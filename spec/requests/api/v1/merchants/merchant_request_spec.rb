@@ -265,6 +265,16 @@ describe 'Merchants API' do
         expect(customer["attributes"]["id"]).to eq(@customer.id)
         expect(customer["attributes"]["first_name"]).to eq(@customer.first_name)
       end
+
+      it 'can return customers with pending invoices' do
+        get "/api/v1/merchants/#{@merchant_1.id}/customers_with_pending_invoices"
+
+        customers = JSON.parse(response.body)["data"]
+        expected = JSON.parse(CustomerSerializer.new([@customer, @unpaid_invoice.customer]).to_json)["data"]
+
+        expect(customers.length).to eq(2)
+        expect(customers).to eq(expected)
+      end
     end
   end
 end
