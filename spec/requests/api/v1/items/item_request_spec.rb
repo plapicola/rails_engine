@@ -196,7 +196,7 @@ describe 'Items API' do
     end
 
     it 'it can return invoice_items for an item' do
-      invoice_item_1, invoice_item_2 = create_list(:invoice_items, 2, item: @item)
+      invoice_item_1, invoice_item_2 = create_list(:invoice_item, 2, item: @item)
       get "/api/v1/items/#{@item.id}/invoice_items"
 
       invoice_items = JSON.parse(response.body)["data"]
