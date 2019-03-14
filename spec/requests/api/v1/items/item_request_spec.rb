@@ -191,8 +191,30 @@ describe 'Items API' do
   end
 
   describe 'relationships' do
-    pending 'it can return invoice_items for an item'
-    pending 'it can return merchant for an item'
+    before :each do
+      @item = create(:item)
+    end
+
+    it 'it can return invoice_items for an item' do
+      invoice_item_1, invoice_item_2 = create_list(:invoice_items, 2, item: @item)
+      get "/api/v1/items/#{@item.id}/invoice_items"
+
+      invoice_items = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(invoice_items.length).to eq(2)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(invoice_item_1.id)
+      expect(invoice_items[1]["attributes"]["id"]).to eq(invoice_item_2.id)
+    end
+
+    it 'it can return merchant for an item' do
+      get "/api/v1/items/#{@item.id}/merchant"
+
+      merchant = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(merchant["attributes"]["id"]).to eq(@item.merchant_id)
+    end
   end
 
   describe 'business intelligence' do
