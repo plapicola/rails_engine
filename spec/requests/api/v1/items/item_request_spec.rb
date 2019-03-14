@@ -222,11 +222,11 @@ describe 'Items API' do
       before :each do
         @high_volume_item = create(:item)
         @normal_item = create(:item)
-        @expensive_item = create(:item, unit_price: 99999)
+        @expensive_item = create(:item)
 
         @high_volume_invoice_items = create_list(:invoice_item, 5, item: @high_volume_item, quantity: 100)
         @normal_invoice_items = create_list(:invoice_item, 5, item: @normal_item)
-        @expensive_invoice_item = create(:invoice_item, item: @expensive_item)
+        @expensive_invoice_item = create(:invoice_item, item: @expensive_item, unit_price: 99999)
 
         @high_volume_invoice_items.each {|invoice_item| invoice_item.invoice.transactions << create(:transaction)}
         @normal_invoice_items.each {|invoice_item| invoice_item.invoice.transactions << create(:transaction)}
