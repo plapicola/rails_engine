@@ -219,8 +219,39 @@ describe 'Items API' do
 
   describe 'business intelligence' do
     describe 'all items' do
-      pending 'it can return the top X items by revenue'
-      pending 'it can return the top X items by quantity'
+      before :each do
+        @high_volume_item = create(:item)
+        @normal_item = create(:item)
+        @expensive_item = create(:item, unit_price: 99999)
+
+        @high_volume_invoice_items = create_list(:invoice_item, 5, item: @high_volume_item, quantity: 100)
+        @normal_invoice_items = create_list(:invoice_item, 5, item: @normal_item)
+        @expensive_invoice_item = create(:invoice_item, item: @expensive_item)
+
+        @high_volume_invoice_items.each {|invoice_item| invoice_item.invoice.transactions << create(:transaction)}
+        @normal_invoice_items.each {|invoice_item| invoice_item.invoice.transactions << create(:transaction)}
+        @expensive_invoice_item.invoice.transactions << create(:transaction)
+      end
+
+      it 'it can return the top X items by revenue' do
+        get "/api/v1/items/most_revenue?quantity=2"
+
+        items = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(items[0]["attributes"]["id"]).to eq(@expensive_item.id)
+        expect(items[1]["attributes"]["id"]).to eq(@high_volume_item.id)
+      end
+
+      it 'it can return the top X items by quantity' do
+        get "/api/v1/items/most_items?quantity=2"
+
+        items = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(items[0]["attributes"]["id"]).to eq(@high_volume_item.id)
+        expect(items[1]["attributes"]["id"]).to eq(@normal_item.id)
+      end
     end
 
     describe 'single items' do
