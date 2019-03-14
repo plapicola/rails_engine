@@ -36,7 +36,9 @@ describe 'Items API' do
 
   describe 'finder' do
     before :each do
-      @item = create(:item)
+      @created_at = 5.days.ago.strftime("%F %T UTC")
+      @updated_at = 5.days.ago.strftime("%F %T UTC")
+      @item = create(:item, created_at: @created_at, updated_at: @updated_at)
     end
 
     it 'it can find by id' do
@@ -85,7 +87,7 @@ describe 'Items API' do
     end
 
     it 'it can find by created_at' do
-      get "/api/v1/items/find?created_at=#{@item.created_at.strftime("%F")}"
+      get "/api/v1/items/find?created_at=#{@created_at}"
 
       item = JSON.parse(response.body)["data"]
 
@@ -94,7 +96,7 @@ describe 'Items API' do
     end
 
     it 'it can find by updated_at' do
-      get "/api/v1/items/find?updated_at=#{@item.updated_at.strftime("%F")}"
+      get "/api/v1/items/find?updated_at=#{@updated_at}"
 
       item = JSON.parse(response.body)["data"]
 
