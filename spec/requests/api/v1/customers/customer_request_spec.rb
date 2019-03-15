@@ -14,12 +14,14 @@ describe 'Customer API' do
   end
 
   it 'can return a customer by id' do
-    customer = create(:customer)
+    new_customer = create(:customer)
 
-    get "/api/v1/customers/#{customer.id}"
+    get "/api/v1/customers/#{new_customer.id}"
+
+    customer = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(customer["attributes"]["id"]).to eq(customer.id)
+    expect(customer["attributes"]["id"]).to eq(new_customer.id)
   end
 
   it 'can return a random customer' do
@@ -30,7 +32,7 @@ describe 'Customer API' do
     customer = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(customer["attributes"]["id"]).to eq(customer_1.id).or(eq(customer_2))
+    expect(customer["attributes"]["id"]).to eq(customer_1.id).or(eq(customer_2.id))
   end
 
   describe 'finder' do
@@ -95,17 +97,17 @@ describe 'Customer API' do
       @customer_3 = create(:customer, created_at: @created_at, first_name: "Bob", last_name: "Smith")
     end
 
-    it 'can find by id' do
-      get "/api/v1/customers/find?id=#{@customer_1.id}"
+    it 'can find_all by id' do
+      get "/api/v1/customers/find_all?id=#{@customer_1.id}"
 
       customer = JSON.parse(response.body)["data"][0]
 
       expect(response).to be_successful
-      expect(customer["attributes"]["id"]).to eq(@customer.id)
+      expect(customer["attributes"]["id"]).to eq(@customer_1.id)
     end
 
-    it 'can find by first_name' do
-      get "/api/v1/customers/find?first_name=#{@customer_2.first_name}"
+    it 'can find_all by first_name' do
+      get "/api/v1/customers/find_all?first_name=#{@customer_2.first_name}"
 
       customers = JSON.parse(response.body)["data"]
 
@@ -114,8 +116,8 @@ describe 'Customer API' do
       expect(customers[1]["attributes"]["id"]).to eq(@customer_3.id)
     end
 
-    it 'can find by last_name' do
-      get "/api/v1/customers/find?last_name=#{@customer_1.last_name}"
+    it 'can find_all by last_name' do
+      get "/api/v1/customers/find_all?last_name=#{@customer_1.last_name}"
 
       customers = JSON.parse(response.body)["data"]
 
@@ -130,8 +132,8 @@ describe 'Customer API' do
       customers = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(customers["data"][0]["attributes"]["id"]).to eq(@merchant_1.id)
-      expect(customers["data"][1]["attributes"]["id"]).to eq(@merchant_3.id)
+      expect(customers["data"][0]["attributes"]["id"]).to eq(@customer_1.id)
+      expect(customers["data"][1]["attributes"]["id"]).to eq(@customer_3.id)
       expect(customers["data"].length).to eq(2)
     end
 
@@ -141,8 +143,8 @@ describe 'Customer API' do
       customers = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(customers["data"][0]["attributes"]["id"]).to eq(@merchant_1.id)
-      expect(customers["data"][1]["attributes"]["id"]).to eq(@merchant_2.id)
+      expect(customers["data"][0]["attributes"]["id"]).to eq(@customer_1.id)
+      expect(customers["data"][1]["attributes"]["id"]).to eq(@customer_2.id)
       expect(customers["data"].length).to eq(2)
     end
   end
@@ -177,7 +179,7 @@ describe 'Customer API' do
       transactions = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoices.length).to eq(5)
+      expect(transactions.length).to eq(5)
       expect(transactions[0]["attributes"]["id"]).to eq(@invoices[0].transactions.first.id)
       expect(transactions[1]["attributes"]["id"]).to eq(@invoices[1].transactions.first.id)
       expect(transactions[2]["attributes"]["id"]).to eq(@invoices[2].transactions.first.id)
