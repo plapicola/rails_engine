@@ -18,6 +18,18 @@ Rails.application.routes.draw do
         get '/customers_with_pending_invoices', to: 'merchants/customers#index', as: :pending_customers
       end
 
+      namespace :customers do
+        get '/find', to: 'search#show', as: :find
+        get '/find_all', to: 'search#index', as: :find_all
+        get '/random', to: 'random#show', as: :random
+      end
+
+      resources :customers, only: [:index, :show] do
+        get '/invoices', to: 'customers/invoices#index', as: :invoices
+        get '/transactions', to: 'customers/transactions#index', as: :transactions
+        get '/favorite_merchant', to: 'customers/merchants#show', as: :favorite_merchant
+      end
+
       namespace :items do
         get '/find', to: 'search#show', as: :find
         get '/find_all', to: 'search#index', as: :find_all
