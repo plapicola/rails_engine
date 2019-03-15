@@ -190,8 +190,26 @@ describe 'Customer API' do
 
   describe 'business intelligence' do
     describe 'single customers' do
+      before :each do
+        @customer = create(:customer)
+        @merchant_1, @merchant_2 = create_list(:merchant, 2)
+        @successful_invoice_1 = create(:invoice, merchant: @merchant_1, customer: @customer)
+        @successful_invoice_2 = create(:invoice, merchant: @merchant_1, customer: @customer)
+        @successful_invoice_3 = create(:invoice, merchant: @merchant_2, customer: @customer)
+        @unsuccessful_invoice = create(:invoice, merchant: @merchant_2, customer: @customer)
+        @unpaid_invoice = create(:invoice, merchant: @merchant_2, customer: @customer)
+        @successful_invoice_1.transactions << create(:transaction, invoice: @successful_invoice_1)
+        @successful_invoice_2.transactions << create(:transaction, invoice: @successful_invoice_2)
+        @successful_invoice_3.transactions << create(:transaction, invoice: @successful_invoice_3)
+        @unsuccessful_invoice.transactions << create(:failed_transaction, invoice: @unsuccessful_invoice)
+      end
       it 'it can return the favrite merchant for a customer' do
+        get "/api/v1/customers/#{@customer.id}/favorite_merchant"
 
+        merchant = JSON.parse(response.body)["data"]
+
+        expect(response).to be_successful
+        expect(merchant["attributes"]["id"]).to eq(@merchant_1)
       end
     end
   end

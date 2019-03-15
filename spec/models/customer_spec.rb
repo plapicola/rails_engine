@@ -28,5 +28,25 @@ RSpec.describe Customer, type: :model do
         expect(transactions[4].id).to eq(invoices[4].transactions.first.id)
       end
     end
+
+    describe '.favorite_merchant' do
+      before :each do
+        @customer = create(:customer)
+        @merchant_1, @merchant_2 = create_list(:merchant, 2)
+        @successful_invoice_1 = create(:invoice, merchant: @merchant_1, customer: @customer)
+        @successful_invoice_2 = create(:invoice, merchant: @merchant_1, customer: @customer)
+        @successful_invoice_3 = create(:invoice, merchant: @merchant_2, customer: @customer)
+        @unsuccessful_invoice = create(:invoice, merchant: @merchant_2, customer: @customer)
+        @unpaid_invoice = create(:invoice, merchant: @merchant_2, customer: @customer)
+        @successful_invoice_1.transactions << create(:transaction, invoice: @successful_invoice_1)
+        @successful_invoice_2.transactions << create(:transaction, invoice: @successful_invoice_2)
+        @successful_invoice_3.transactions << create(:transaction, invoice: @successful_invoice_3)
+        @unsuccessful_invoice.transactions << create(:failed_transaction, invoice: @unsuccessful_invoice)
+      end
+
+      it 'returns the merchant that the customer has had the most successful transactions with' do
+        expect(@customer.favorite_merchant).to eq(@merchant_1)
+      end
+    end
   end
 end
