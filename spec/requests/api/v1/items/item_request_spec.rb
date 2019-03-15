@@ -267,6 +267,11 @@ describe 'Items API' do
           create(:transaction, invoice: invoice, created_at: @two_weeks_ago)
           create(:invoice_item, item: @item, invoice: invoice)
         end
+        @invoices = create_list(:invoice, 2, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"), customer: @customer, merchant: @merchant)
+        @invoices.each do |invoice|
+          create(:transaction, invoice: invoice, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"))
+          create(:invoice_item, item: @item, invoice: invoice)
+        end
         @invoices = create_list(:invoice, 3, invoice_items: [create(:invoice_item, item: @item)], created_at: @yesterday, customer: @customer, merchant: @merchant)
         @invoices.each do |invoice|
           create(:transaction, invoice: invoice, created_at: @yesterday)
