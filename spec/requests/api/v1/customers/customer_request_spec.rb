@@ -209,7 +209,7 @@ describe 'Customer API' do
         merchant = JSON.parse(response.body)["data"]
 
         expect(response).to be_successful
-        expect(merchant["attributes"]["id"]).to eq(@merchant_1)
+        expect(merchant["attributes"]["id"]).to eq(@merchant_1.id)
       end
     end
   end
