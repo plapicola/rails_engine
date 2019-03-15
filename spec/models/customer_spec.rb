@@ -21,11 +21,11 @@ RSpec.describe Customer, type: :model do
         transactions = customer.transactions
 
         expect(transactions.length).to eq(5)
-        expect(transactions[0]["attributes"]["id"]).to eq(@invoices[0].transactions.first.id)
-        expect(transactions[1]["attributes"]["id"]).to eq(@invoices[1].transactions.first.id)
-        expect(transactions[2]["attributes"]["id"]).to eq(@invoices[2].transactions.first.id)
-        expect(transactions[3]["attributes"]["id"]).to eq(@invoices[3].transactions.first.id)
-        expect(transactions[4]["attributes"]["id"]).to eq(@invoices[4].transactions.first.id)
+        expect(transactions[0].id).to eq(invoices[0].transactions.first.id)
+        expect(transactions[1].id).to eq(invoices[1].transactions.first.id)
+        expect(transactions[2].id).to eq(invoices[2].transactions.first.id)
+        expect(transactions[3].id).to eq(invoices[3].transactions.first.id)
+        expect(transactions[4].id).to eq(invoices[4].transactions.first.id)
       end
     end
   end
