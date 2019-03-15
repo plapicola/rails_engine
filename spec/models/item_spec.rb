@@ -47,16 +47,17 @@ RSpec.describe Item, type: :model do
         @item = create(:item, merchant: @merchant)
         @two_weeks_ago = 2.weeks.ago.strftime("%F %T UTC")
         @yesterday = 1.day.ago.strftime("%F %T UTC")
-        @invoices = create_list(:invoice, 3, created_at: @two_weeks_ago, customer: @customer, merchant: @merchant)
+        @invoices = create_list(:invoice, 5, created_at: @two_weeks_ago, customer: @customer, merchant: @merchant)
         @invoices.each do |invoice|
           create(:transaction, invoice: invoice, created_at: @two_weeks_ago)
           create(:invoice_item, item: @item, invoice: invoice)
         end
-        @invoices = create_list(:invoice, 2, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"), customer: @customer, merchant: @merchant)
-        @invoices.each do |invoice|
-          create(:transaction, invoice: invoice, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"))
-          create(:invoice_item, item: @item, invoice: invoice)
-        end
+        # Adjusted to remove test for non-rolling 24 hour period
+        # @invoices = create_list(:invoice, 2, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"), customer: @customer, merchant: @merchant)
+        # @invoices.each do |invoice|
+        #   create(:transaction, invoice: invoice, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"))
+        #   create(:invoice_item, item: @item, invoice: invoice)
+        # end
         @invoices = create_list(:invoice, 3, invoice_items: [create(:invoice_item, item: @item)], created_at: @yesterday, customer: @customer, merchant: @merchant)
         @invoices.each do |invoice|
           create(:transaction, invoice: invoice, created_at: @yesterday)
