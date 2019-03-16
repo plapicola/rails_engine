@@ -9,9 +9,9 @@ describe 'Invoice Items API' do
     invoice_items = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(response[0]["attributes"]["id"]).to eq(invoice_item_1.id)
-    expect(response[1]["attributes"]["id"]).to eq(invoice_item_2.id)
-    expect(response[2]["attributes"]["id"]).to eq(invoice_item_3.id)
+    expect(invoice_items[0]["attributes"]["id"]).to eq(invoice_item_1.id)
+    expect(invoice_items[1]["attributes"]["id"]).to eq(invoice_item_2.id)
+    expect(invoice_items[2]["attributes"]["id"]).to eq(invoice_item_3.id)
   end
 
   it 'can send a single invoice item' do
@@ -33,7 +33,7 @@ describe 'Invoice Items API' do
     found_invoice_item = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(found_invoice_item["attrbutes"]["id"]).to eq(invoice_item_1.id).or(eq(invoice_item_2.id))
+    expect(found_invoice_item["attributes"]["id"]).to eq(invoice_item_1.id).or(eq(invoice_item_2.id))
   end
 
   describe 'finder' do
@@ -79,12 +79,12 @@ describe 'Invoice Items API' do
     end
 
     it 'can find by unit_price' do
-      get "/api/v1/invoice_items/find?unit_price=#{@invoice_item.unit_price}"
+      get "/api/v1/invoice_items/find?unit_price=#{@invoice_item.unit_price / 100.0}"
 
       invoice_item = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_item["attributes"]["unit_price"]).to eq(@invoice_item.unit_price)
+      expect(invoice_item["attributes"]["unit_price"]).to eq((@invoice_item.unit_price / 100.0).to_s)
     end
 
     it 'can find by created_at' do
@@ -123,7 +123,7 @@ describe 'Invoice Items API' do
       invoice_items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_items[0]["attrbutes"]["id"]).to eq(@invoice_item_1.id)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_1.id)
     end
 
     it 'can find by item_id' do
@@ -132,8 +132,8 @@ describe 'Invoice Items API' do
       invoice_items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_items[0]["attrbutes"]["id"]).to eq(@invoice_item_1.id)
-      expect(invoice_items[1]["attrbutes"]["id"]).to eq(@invoice_item_3.id)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_1.id)
+      expect(invoice_items[1]["attributes"]["id"]).to eq(@invoice_item_3.id)
     end
 
     it 'can find by invoice_id' do
@@ -142,8 +142,8 @@ describe 'Invoice Items API' do
       invoice_items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_items[0]["attrbutes"]["id"]).to eq(@invoice_item_2.id)
-      expect(invoice_items[1]["attrbutes"]["id"]).to eq(@invoice_item_3.id)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_2.id)
+      expect(invoice_items[1]["attributes"]["id"]).to eq(@invoice_item_3.id)
     end
 
     it 'can find by quantity' do
@@ -152,7 +152,7 @@ describe 'Invoice Items API' do
       invoice_items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_items[0]["attrbutes"]["id"]).to eq(@invoice_item_2.id)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_2.id)
     end
 
     it 'can find by unit_price' do
@@ -161,9 +161,9 @@ describe 'Invoice Items API' do
       invoice_items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_items[0]["attrbutes"]["id"]).to eq(@invoice_item_1.id)
-      expect(invoice_items[1]["attrbutes"]["id"]).to eq(@invoice_item_2.id)
-      expect(invoice_items[2]["attrbutes"]["id"]).to eq(@invoice_item_3.id)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_1.id)
+      expect(invoice_items[1]["attributes"]["id"]).to eq(@invoice_item_2.id)
+      expect(invoice_items[2]["attributes"]["id"]).to eq(@invoice_item_3.id)
     end
 
     it 'can find by created_at' do
@@ -172,8 +172,8 @@ describe 'Invoice Items API' do
       invoice_items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_items[0]["attrbutes"]["id"]).to eq(@invoice_item_1.id)
-      expect(invoice_items[1]["attrbutes"]["id"]).to eq(@invoice_item_3.id)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_1.id)
+      expect(invoice_items[1]["attributes"]["id"]).to eq(@invoice_item_3.id)
     end
 
     it 'can find by updated_at' do
@@ -182,8 +182,8 @@ describe 'Invoice Items API' do
       invoice_items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice_items[0]["attrbutes"]["id"]).to eq(@invoice_item_1.id)
-      expect(invoice_items[1]["attrbutes"]["id"]).to eq(@invoice_item_2.id)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_1.id)
+      expect(invoice_items[1]["attributes"]["id"]).to eq(@invoice_item_2.id)
     end
   end
 
@@ -204,12 +204,12 @@ describe 'Invoice Items API' do
     end
 
     it 'can return the invoice' do
-      get "/api/v1/invoice_items/#{@invoice_item.id}/item"
+      get "/api/v1/invoice_items/#{@invoice_item.id}/invoice"
 
       invoice = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice["attrbites"]["id"]).to eq(@invoice.id)
+      expect(invoice["attributes"]["id"]).to eq(@invoice.id)
     end
   end
 end
