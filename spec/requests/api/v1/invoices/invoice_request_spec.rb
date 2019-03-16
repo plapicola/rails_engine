@@ -47,19 +47,19 @@ describe 'Invoices API' do
     it 'can find by id' do
       get "/api/v1/invoices/find?id=#{@invoice.id}"
 
-      item = JSON.parse(response.body)["data"]
+      invoice = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(item["attributes"]["id"]).to eq(@item.id)
+      expect(invoice["attributes"]["id"]).to eq(@invoice.id)
     end
 
     it 'can find by customer_id' do
       get "/api/v1/invoices/find?customer_id=#{@invoice.customer_id}"
 
-      item = JSON.parse(response.body)["data"]
+      invoice = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(item["attributes"]["customer_id"]).to eq(@item.customer_id)
+      expect(invoice["attributes"]["customer_id"]).to eq(@invoice.customer_id)
     end
 
     it 'can find by merchant_id' do
@@ -68,7 +68,7 @@ describe 'Invoices API' do
       item = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(item["attributes"]["merchant_id"]).to eq(@item.merchant_id)
+      expect(item["attributes"]["merchant_id"]).to eq(@invoice.merchant_id)
     end
 
     it 'can find by invoice status' do
@@ -77,25 +77,25 @@ describe 'Invoices API' do
       item = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(item["attributes"]["status"]).to eq(@item.status)
+      expect(item["attributes"]["status"]).to eq(@invoice.status)
     end
 
     it 'can find by created_at' do
       get "/api/v1/invoices/find?created_at=#{@created_at}"
 
-      item = JSON.parse(response.body)["data"]
+      invoice = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(item["attributes"]["id"]).to eq(@item.id)
+      expect(invoice["attributes"]["id"]).to eq(@invoice.id)
     end
 
     it 'can find by updated_at' do
       get "/api/v1/invoices/find?updated_at=#{@updated_at}"
 
-      item = JSON.parse(response.body)["data"]
+      invoice = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(item["attributes"]["id"]).to eq(@item.id)
+      expect(invoice["attributes"]["id"]).to eq(@invoice.id)
     end
   end
 
@@ -116,11 +116,11 @@ describe 'Invoices API' do
       invoice = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoice["attributes"]["id"]).to eq(@invoice_1.id)
+      expect(invoice[0]["attributes"]["id"]).to eq(@invoice_1.id)
     end
 
     it 'can find by customer_id' do
-      get "/api/v1/invoices/find_all?customer_id=#{@invoice_1.customer_id}"
+      get "/api/v1/invoices/find_all?customer_id=#{@invoice_2.customer_id}"
 
       invoices = JSON.parse(response.body)["data"]
 
@@ -131,14 +131,14 @@ describe 'Invoices API' do
     end
 
     it 'can find by merchant_id' do
-      get "/api/v1/invoices/find_all?id=#{@invoice_1.id}"
+      get "/api/v1/invoices/find_all?merchant_id=#{@invoice_1.merchant_id}"
 
       invoices = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
       expect(invoices.length).to eq(2)
-      expect(invoices["attributes"]["merchant_id"]).to eq(@merchant.id)
-      expect(invoices["attributes"]["merchant_id"]).to eq(@merchant.id)
+      expect(invoices[0]["attributes"]["merchant_id"]).to eq(@merchant.id)
+      expect(invoices[1]["attributes"]["merchant_id"]).to eq(@merchant.id)
     end
 
     it 'can find by status' do
@@ -147,9 +147,9 @@ describe 'Invoices API' do
       invoices = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
-      expect(invoices.lenth).to eq(2)
+      expect(invoices.length).to eq(2)
       expect(invoices[0]["attributes"]["id"]).to eq(@invoice_1.id)
-      expect(invoices[2]["attributes"]["id"]).to eq(@invoice_3.id)
+      expect(invoices[1]["attributes"]["id"]).to eq(@invoice_3.id)
     end
 
     it 'can find by created_at' do
@@ -157,21 +157,21 @@ describe 'Invoices API' do
 
       invoices = JSON.parse(response.body)["data"]
 
-      expecr(response).to be_successful
+      expect(response).to be_successful
       expect(invoices.length).to eq(2)
-      expect(invoices[0]["attributes"]["id"]).to eq(@inovice_1.id)
-      expect(invoices[1]["attributes"]["id"]).to eq(@inovice_3.id)
+      expect(invoices[0]["attributes"]["id"]).to eq(@invoice_1.id)
+      expect(invoices[1]["attributes"]["id"]).to eq(@invoice_3.id)
     end
 
     it 'can find by updated_at' do
-      get "/api/v1/invoices/find_all?created_at=#{@updated_at}"
+      get "/api/v1/invoices/find_all?updated_at=#{@updated_at}"
 
       invoices = JSON.parse(response.body)["data"]
 
-      expecr(response).to be_successful
+      expect(response).to be_successful
       expect(invoices.length).to eq(2)
-      expect(invoices[0]["attributes"]["id"]).to eq(@inovice_1.id)
-      expect(invoices[1]["attributes"]["id"]).to eq(@inovice_2.id)
+      expect(invoices[0]["attributes"]["id"]).to eq(@invoice_1.id)
+      expect(invoices[1]["attributes"]["id"]).to eq(@invoice_2.id)
     end
   end
 
@@ -182,8 +182,8 @@ describe 'Invoices API' do
       @item = create(:item, merchant: @merchant)
       @invoice = create(:invoice, customer: @customer, merchant: @merchant)
       @invoice_item_1, @invoice_item_2 = create_list(:invoice_item, 2, invoice: @invoice, item: @item)
-      @transaction_1 = @invoice.transactions << create(:failed_transaction, invoice: @invoice)
-      @transaction_2 = @invoice.transactions << create(:transaction, invoice: @invoice)
+      @transaction_1 = create(:failed_transaction, invoice: @invoice)
+      @transaction_2 = create(:transaction, invoice: @invoice)
     end
 
     it 'it can return all transactions' do
@@ -193,12 +193,12 @@ describe 'Invoices API' do
 
       expect(response).to be_successful
       expect(transactions.length).to eq(2)
-      expect(trnsactions[0]["attributes"]["id"]).to eq(@transaction_1.id)
-      expect(trnsactions[1]["attributes"]["id"]).to eq(@transaction_2.id)
+      expect(transactions[0]["attributes"]["id"]).to eq(@transaction_1.id)
+      expect(transactions[1]["attributes"]["id"]).to eq(@transaction_2.id)
     end
 
     it 'it can return all invoice_items' do
-      get "/api/v1/invoices/#{@invoice.id}"
+      get "/api/v1/invoices/#{@invoice.id}/invoice_items"
 
       invoice_items = JSON.parse(response.body)["data"]
 
@@ -210,13 +210,13 @@ describe 'Invoices API' do
 
     it 'it can return all items' do
       other_item = create(:item)
-      get "/api/v1/invoices/#{@invoice_1.id}/items"
+      get "/api/v1/invoices/#{@invoice.id}/items"
 
       items = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
       expect(items.length).to eq(1)
-      expect(items[0]["attributes"]["data"]).to eq(@item.id)
+      expect(items[0]["attributes"]["id"]).to eq(@item.id)
     end
 
     it 'it can return the customer' do
