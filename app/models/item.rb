@@ -30,12 +30,12 @@ class Item < ApplicationRecord
   end
 
   def best_day
-    Invoice.select("invoices.created_at AS best_day, SUM(invoice_items.quantity) as volume")
-           .joins(:items, :transactions)
+    Invoice.select("DATE_TRUNC('day', invoices.created_at) AS best_day, SUM(invoice_items.quantity) as volume")
+           .joins(:invoice_items, :transactions)
            .merge(Transaction.unscoped.successful)
            .where(invoice_items: {item_id: self.id})
-           .group(:created_at)
-           .order('volume desc, invoices.created_at desc').first
+           .group("best_day")
+           .order('volume desc, best_day desc').first
 
     # Invoice.select("invoices.created_at AS best_day, SUM(invoice_items.quantity) as total_quantity")
     #        .joins(:transactions)
