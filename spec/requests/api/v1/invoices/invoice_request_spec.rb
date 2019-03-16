@@ -176,5 +176,65 @@ describe 'Invoices API' do
   end
 
   describe 'relationships' do
+    before :each do
+      @merchant = create(:merchant)
+      @customer = create(:customer)
+      @item = create(:item, merchant: @merchant)
+      @invoice = create(:invoice, customer: @customer, merchant: @merchant)
+      @invoice_item_1, @invoice_item_2 = create_list(:invoice_item, 2, invoice: @invoice, item: @item)
+      @transaction_1 = @invoice.transactions << create(:failed_transaction, invoice: @invoice)
+      @transaction_2 = @invoice.transactions << create(:transaction, invoice: @invoice)
+    end
+
+    it 'it can return all transactions' do
+      get "/api/v1/invoices/#{@invoice.id}/transactions"
+
+      transactions = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(transactions.length).to eq(2)
+      expect(trnsactions[0]["attributes"]["id"]).to eq(@transaction_1.id)
+      expect(trnsactions[1]["attributes"]["id"]).to eq(@transaction_2.id)
+    end
+
+    it 'it can return all invoice_items' do
+      get "/api/v1/invoices/#{@invoice.id}"
+
+      invoice_items = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(invoice_items.length).to eq(2)
+      expect(invoice_items[0]["attributes"]["id"]).to eq(@invoice_item_1.id)
+      expect(invoice_items[1]["attributes"]["id"]).to eq(@invoice_item_2.id)
+    end
+
+    it 'it can return all items' do
+      other_item = create(:item)
+      get "/api/v1/invoices/#{@invoice_1.id}/items"
+
+      items = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(items.length).to eq(1)
+      expect(items[0]["attributes"]["data"]).to eq(@item.id)
+    end
+
+    it 'it can return the customer' do
+      get "/api/v1/invoices/#{@invoice.id}/customer"
+
+      customer = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(customer["attributes"]["id"]).to eq(@customer.id)
+    end
+
+    it 'it can return the merchant' do
+      get "/api/v1/invoices/#{@invoice.id}/merchant"
+
+      merchant = JSON.parse(response.body)["data"]
+
+      expect(response).to be_successful
+      expect(merchant["attributes"]["id"]).to eq(@merchant.id)
+    end
   end
 end
