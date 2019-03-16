@@ -6,7 +6,7 @@ describe 'Transactions API' do
 
     get "/api/v1/transactions"
 
-    transactions = JSON.parse(repsonse.body)["data"]
+    transactions = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
     expect(transactions.length).to eq(3)
@@ -20,10 +20,10 @@ describe 'Transactions API' do
 
     get "/api/v1/transactions/#{transaction.id}"
 
-    transaction = JSON.parse(response.body)["data"]
+    found_transaction = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(transaction["attributes"]["id"]).to eq(transaction.id)
+    expect(found_transaction["attributes"]["id"]).to eq(transaction.id)
   end
 
   it 'can send a random transaction' do
@@ -142,7 +142,7 @@ describe 'Transactions API' do
     it 'can find by credit card number' do
       get "/api/v1/transactions/find_all?credit_card_number=#{@transaction_2.credit_card_number}"
 
-      transactions = JSON.parse(repsonse.body)["data"]
+      transactions = JSON.parse(response.body)["data"]
 
       expect(response).to be_successful
       expect(transactions.length).to eq(2)
@@ -165,11 +165,11 @@ describe 'Transactions API' do
     it 'can find by result' do
       get "/api/v1/transactions/find_all?result=#{@transaction_2.result}"
 
-      transactions = JSON.parse(response.body)
-
+      transactions = JSON.parse(response.body)["data"]
+      
       expect(response).to be_successful
       expect(transactions.length).to eq(1)
-      expect(transactions[0]["attribtes"]["id"]).to eq(@transaction_2.id)
+      expect(transactions[0]["attributes"]["id"]).to eq(@transaction_2.id)
     end
 
     it 'can find by created_at' do
