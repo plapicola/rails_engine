@@ -43,6 +43,20 @@ Rails.application.routes.draw do
         get '/merchant', to: 'items/merchants#show', as: :merchant
         get '/best_day', to: 'items/best_day#show', as: :best_day
       end
+
+      namespace :invoices do
+        get '/find', to: 'search#show', as: :find
+        get '/find_all', to: 'search#index', as: :find_all
+        get '/random', to: 'random#show', as: :random
+      end
+
+      resources :invoices, only: [:index, :show] do
+        get '/customer', to: 'invoices/customers#show', as: :customer
+        get '/merchant', to: 'invoices/merchants#show', as: :merchant
+        get '/invoice_items', to: 'invoices/invoice_items#index', as: :invoice_items
+        get '/items', to: 'invoices/items#index', as: :items
+        get '/transactions', to: 'invoices/transactions#index', as: :transactions
+      end
     end
   end
 end

@@ -23,6 +23,12 @@ class Item < ApplicationRecord
     .limit(limit)
   end
 
+  def self.for_invoice(invoice_id)
+    Item.distinct
+        .joins(:invoices)
+        .where(invoices: {id: invoice_id})
+  end
+
   def best_day
     Invoice.select("invoices.created_at AS best_day, SUM(invoice_items.quantity) as volume")
            .joins(:items, :transactions)

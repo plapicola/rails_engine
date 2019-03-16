@@ -37,6 +37,16 @@ RSpec.describe Item, type: :model do
         expect(Item.top_by_revenue(2)).to eq([@expensive_item, @high_volume_item])
       end
     end
+
+    describe '.for_invoice(invoice_id)' do
+      it 'returns a unique list of items for the given invoice' do
+        invoice = @expensive_invoice_item.invoice
+        invoice.items << @expensive_item
+        invoice.items << @normal_item
+
+        expect(Item.for_invoice(invoice.id)).to eq([@normal_item, @expensive_item])
+      end
+    end
   end
 
   describe 'instance methods' do
