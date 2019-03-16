@@ -260,19 +260,18 @@ describe 'Items API' do
         @merchant = create(:merchant)
         @item = create(:item, merchant: @merchant)
         @two_weeks_ago = 2.weeks.ago.strftime("%F %T UDT")
-        @response_time = 2.weeks.ago.strftime("%FT%T.000Z")
+        @response_time = 2.weeks.ago.strftime("%F")
         @yesterday = 1.day.ago.strftime("%F %T UDT")
-        @invoices = create_list(:invoice, 5, created_at: @two_weeks_ago, customer: @customer, merchant: @merchant)
+        @invoices = create_list(:invoice, 3, created_at: @two_weeks_ago, customer: @customer, merchant: @merchant)
         @invoices.each do |invoice|
           create(:transaction, invoice: invoice, created_at: @two_weeks_ago)
           create(:invoice_item, item: @item, invoice: invoice)
         end
-        # Adjusted to not use rolling 24 hour period per discussion with Josh
-        # @invoices = create_list(:invoice, 2, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"), customer: @customer, merchant: @merchant)
-        # @invoices.each do |invoice|
-        #   create(:transaction, invoice: invoice, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"))
-        #   create(:invoice_item, item: @item, invoice: invoice)
-        # end
+        @invoices = create_list(:invoice, 2, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"), customer: @customer, merchant: @merchant)
+        @invoices.each do |invoice|
+          create(:transaction, invoice: invoice, created_at: (2.weeks.ago + 3.hours).strftime("%F %T UTC"))
+          create(:invoice_item, item: @item, invoice: invoice)
+        end
         @invoices = create_list(:invoice, 3, invoice_items: [create(:invoice_item, item: @item)], created_at: @yesterday, customer: @customer, merchant: @merchant)
         @invoices.each do |invoice|
           create(:transaction, invoice: invoice, created_at: @yesterday)
