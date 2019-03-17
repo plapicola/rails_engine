@@ -14,12 +14,22 @@
 # Configure Using Gemfile
 # gem 'pg'
 #
+
+# To use the application outside docker uncomment the Non-Docker info below
 default: &default
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: 5
+  host: db
+  username: postgres
+  password:
+
+
+# Non-Docker Database Connection
+# default: &default
+#   adapter: postgresql
+#   encoding: unicode
+#   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
   <<: *default
