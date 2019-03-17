@@ -85,6 +85,10 @@ By default, the application listens on port `3000`
 
 To stop the application when running, press `ctrl + c` to stop the server.
 
+###### Running the Test Suite
+
+The application, when not running in Docker, includes a testing suite built using RSpec. In order to run the test suite, use the command `bundle exec rspec`
+
 ### Using the Application
 
 The application provides a uniform collection of API endpoints for all records included in the application. The included record types are:
