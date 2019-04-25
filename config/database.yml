@@ -21,8 +21,8 @@ default: &default
   encoding: unicode
   pool: 5
   host: db
-  username: postgres
-  password:
+  username: docker
+  password: docker
 
 
 # Non-Docker Database Connection
